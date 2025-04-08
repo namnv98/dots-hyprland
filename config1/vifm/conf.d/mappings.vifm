@@ -1,0 +1,55 @@
+" Mở gnome-text-editor với file hiện tại
+" nnoremap <leader>e :!gnome-text-editor %f &>/dev/null &<CR>
+
+" Thoát
+nnoremap Q :wqall<cr>
+nnoremap qq :wqall<cr>
+
+" Hiển thị hộp thoại sắp xếp
+nnoremap <silent> S :sort<cr>
+
+" Hiển thị menu các chương trình được thiết lập cho loại file của file hiện tại
+nnoremap <silent> o :file &<cr>
+" Chọn mục hiện tại trong chế độ menu
+mmap o <cr>
+
+" Mở file trong nền bằng chương trình mặc định của nó
+nnoremap <silent> gb :file &<cr>l
+
+" ****** -> phải cải xclip mới dùng đc
+" Sao chép đường dẫn thư mục hiện tại vào clipboard
+nnoremap <silent> yd :!echo %d | xclip -r -selection c %i<cr>
+" Sao chép đường dẫn file hiện tại vào clipboard
+nnoremap <silent> yf :!echo %c:p | xclip -r -selection c %i<cr>
+" Sao chép tên file hiện tại vào clipboard
+nnoremap <silent> yN :!echo %c | xclip -r -selection c %i<cr>
+" Sao chép tên file hiện tại (không có phần mở rộng) vào clipboard
+nnoremap <silent> yn :!v="%c"; echo "${v%%.*}" | xclip -r -selection c %i<cr>
+" Sao chép nội dung của file vào clipboard
+nnoremap <silent> yc :!clip "%c" %i<cr>
+
+" Chuyển đổi chế độ tree
+nnoremap <silent> T :tree!<cr>
+
+" Tạo file mới trống
+nnoremap t :touch<space>
+
+" Tạo thư mục mới
+nnoremap m :mkdir<space>
+
+" Mở shell trong thư mục hiện tại
+nnoremap s :!kitty --directory "%d" >/dev/null 2>&1 &<CR>
+
+" Đổi tên không có phần mở rộng
+nnoremap r cW 
+" Đổi tên có phần mở rộng
+nnoremap R cw
+
+" Chuyển xuống và chọn
+" nnoremap <space> tj
+" Chuyển lên và bỏ chọn
+" nnoremap T kt
+
+nnoremap z :!aunpack %f<cr>
+nnoremap n :!zip -r %f.zip %f<cr>
+

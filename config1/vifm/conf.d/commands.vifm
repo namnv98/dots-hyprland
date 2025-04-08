@@ -1,0 +1,113 @@
+"--- Commands ---"
+
+cnoreabbrev Q q
+cnoreabbrev W w
+
+command! df df -h %m 2>/dev/null
+command! run !! ./%f
+command! make !!make %a
+command! mkcd :mkdir! "%a" | cd "%a"
+command! vgrep $EDITOR "+vimgrep %a"
+command! gextract engrampa --extract %f %i &
+command! gcompress engrampa --add %f %i &
+command! link ln -s %d/%f %D
+command! shred shred -u %f &
+command! vidir $TERMINAL -e vidir %a 2>/dev/null &
+command! EDIT nv %a 2>/dev/null &
+" command! EDIT $TERMINAL -e $EDITOR %a 2>/dev/null &
+command! COPY :yank | winrun , put
+command! MOVE :yank | winrun , put!
+command! reload :write | restart full
+command! gs git -c color.ui=always status %q
+command! cover convert %c -resize 500x500\> -quality 80%  cover.jpg &
+command! enc !for f in %f; do gpg --yes -e "$f"; done
+command! dec !for f in %f; do gpg -d "$f" > "${f%%.gpg}"; done
+
+command! mks :![ ! -f %a ] && touch %a && chmod +x %a &&
+	\ printf "#!/bin/sh\n\n\n" >> %a && nv +$ %a 2>/dev/null &
+
+" Diff files & folders
+" uses selection of current pane when it contains more than one file
+" otherwise uses left and right pane file/folder keeping order inside diff window
+command! diff
+	\ : if expand('%%c') == expand('%%f')
+	\ |     if paneisat('right') && paneisat('bottom')
+	\ |         execute '!vdiff %%C %%c'
+	\ |     else
+	\ |         execute '!vdiff %%c %%C'
+	\ |     endif
+	\ | else
+	\ |     execute '!vdiff %%f'
+	\ | endif
+
+command! DIFF
+	\ : if expand('%%c') == expand('%%f')
+	\ |     if paneisat('right') && paneisat('bottom')
+	\ |         execute '!nv -d %%C %%c:p 2>/dev/null &'
+	\ |     else
+	\ |         execute '!nv -d %%c:p %%C 2>/dev/null &'
+	\ |     endif
+	\ | else
+	\ |     execute '!nv -d %%f:p 2>/dev/null &'
+	\ | endif
+
+command! GDIFF
+	\ : if expand('%%c') == expand('%%f')
+	\ |     if paneisat('right') && paneisat('bottom')
+	\ |         execute '!meld -n %%C %%c 2>/dev/null &'
+	\ |     else
+	\ |         execute '!meld -n %%c %%C 2>/dev/null &'
+	\ |     endif
+	\ | else
+	\ |     execute '!meld -n %%f 2>/dev/null &'
+	\ | endif
+
+command! FZFfind
+	\ :set noquickview
+	\ | execute 'goto' fnameescape(term('fd -H | fzf -e 2>/dev/tty'))
+
+command! FZFlocate
+	\ :set noquickview
+	\ | execute 'goto' fnameescape(term('locate / | fzf -e 2>/dev/tty'))
+
+" Send current directories to default instance
+command! send :!vifm --server-name vifm --remote -c "tabnew | cd %d %D"
+
+" Toggle hlsearch
+command! th
+	\ : if &hlsearch == 0
+	\ |     set hlsearch | echo 'hlsearch'
+	\ | else
+	\ |     set nohlsearch | echo 'nohlsearch'
+	\ | endif
+
+" Toggle between sorting: by name <--> by size <--> by mtime
+command! togglesort
+	\ : if &sort == '-size,+name'
+	\ |     set sort=-mtime
+	\ |     echo 'Sorted by modification date'
+	\ | elseif &sort == '+name'
+	\ |     set sort=-size
+	\ |     echo 'Sorted by size'
+	\ | else
+	\ |     set sort=+name
+	\ |     echo 'Sorted by name'
+	\ | endif
+
+" Reverse sort
+command! sortReverse
+	\ : if &sortorder == 'ascending'
+	\ |     set sortorder=descending
+	\ | else
+	\ |     set sortorder=ascending
+	\ | endif
+	\ | set sortorder?
+
+" Set viewcolumns
+command! setcolumnsDetails  :set viewcolumns=-{name}..,11{perms},7{uname},-7{gname},6{size}.,18{mtime}
+command! setcolumnsName     :set viewcolumns=-{name}..,6{}.
+command! setcolumnsPerms    :set viewcolumns=-{name}..,11{perms}
+command! setcolumnsSize     :set viewcolumns=-{name}..,6{size}.
+command! setcolumnsTime     :set viewcolumns=-{name}..,18{mtime}
+command! setcolumnsSizeTime :set viewcolumns=-{name}..,6{size}.,18{mtime}
+

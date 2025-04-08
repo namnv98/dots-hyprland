@@ -1,0 +1,81 @@
+source $VIFM/conf.d/mappings.vifm
+source $VIFM/conf.d/handler.vifm
+source $VIFM/conf.d/icons.vifm
+
+colorscheme custom
+
+let $VIFM_SERVER_NAME = v:servername
+
+if executable('vim')
+    set vicmd=vim
+elseif executable('nvim')
+    set vicmd=nvim
+elseif executable('elvis')
+    set vicmd=elvis\ -G\ termcap
+elseif executable('vile')
+    set vicmd=vile
+elseif $EDITOR != ''
+    echo 'Note: using `'.$EDITOR.'` as an editor'
+    let &vicmd = $EDITOR
+endif
+
+" show file and directory preview in right pane
+view!
+
+" what to suggest on the right pane
+set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
+
+" enable trash and set trash folder
+set trash
+set trashdir=~/.local/share/Trash/files
+
+" remove confirmation before trash/delete
+" set confirm-=delete,permdelete
+set confirm-=permdelete
+
+" set format of statusline
+set statusline="%t %20s %= %-30d %a"
+
+" set format of file modification time
+set timefmt='%b %d, %Y @ %H:%M'
+
+" useful options
+set syscalls dotfiles wildmenu wildstyle=popup
+set history=100 undolevels=100 followlinks norunexec
+set ignorecase smartcase nohlsearch incsearch
+
+" Customize view columns a bit (enable ellipsis for truncated file names)
+set viewcolumns=-{name}..,6{}.
+
+" Format for displaying time in file list. For example:
+" TIME_STAMP_FORMAT=%m/%d-%H:%M
+" See man date or man strftime for details.
+set timefmt=%Y-%m-%d\ %H:%M
+
+" ------------------------------------------------------------------------------
+" Autocmds
+
+au DirEnter /tmp,**/.cache,**/Downloads,**/.torrent-files,**/Videos/Movies,
+	\**/Pictures/**/**,**/pkglists,**/share/pacman/**/**
+	\ setlocal sort=-mtime | setlocal viewcolumns=-{name}..,6{size}.,18{mtime}
+
+" ------------------------------------------------------------------------------
+
+" Custom ruler format
+set rulerformat='%2l-%S%[ +%x%]'
+
+" Set custom status line look
+set statusline=" %t%= %o %A %10u:%-7g %8E %20d "
+
+
+" Ignore .git directory on :find
+set findprg='find %s %a -print ,
+	\ -type d \( ! -readable -o ! -executable -o -path "*/.git" \)
+	\ -prune'
+	
+
+fileviewer <application/octet-stream>,{*.iso,*.qcow2}
+    \ hexyl --border=none --length=1MiB %c
+fileviewer .*/ tree --dirsfirst -CqL 2 %c | tail -n +2
+fileviewer */ tree --dirsfirst -CqL 2 %c | tail -n +2
+fileviewer * highlight -O xterm256 -s base16/material-palenight %c
